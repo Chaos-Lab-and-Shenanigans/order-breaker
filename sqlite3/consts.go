@@ -1,0 +1,12 @@
+package sqlite3
+
+var (
+	lyrics = []string{
+		"NEVER GONNA", "GIVE YOU UP",
+		"NEVER GONNA", "LET YOU DOWN",
+		"NEVER GONNA", "RUN AROUND", "AND DESERT YOU",
+		"NEVER GONNA", "MAKE YOU CRY",
+		"NEVER GONNA", "SAY GOODBYE",
+		"NEVER GONNA", "TELL A LIE", "AND HURT YOU",
+	}
+)

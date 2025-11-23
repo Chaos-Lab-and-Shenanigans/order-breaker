@@ -16,7 +16,7 @@ func main() {
 	backupL := widget.NewLabel("Logs will appear here")
 	logsCh := SetUpdaterChannel(backupL)
 
-	db, err := sqlite3.CreateAndConnect(DATABASE, logsCh)
+	db, err := sqlite3.CreateAndConnect(logsCh, BACKUPOB, DATABASE)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 		return
@@ -26,12 +26,9 @@ func main() {
 	window.SetContent(container.NewVBox(
 		backupL,
 		widget.NewButton("Restore desktop", tappedfunctions.TapRestoreDesktop(db, logsCh, BACKUPOB, DATABASE)),
-		widget.NewButton("Ricky", tappedfunctions.TapRickRollDesktop(db, logsCh, BACKUPOB)),
+		widget.NewButton("Ricky", tappedfunctions.TapRickRollDesktop(db, logsCh, BACKUPOB, picByte)),
 		widget.NewButton("Exit", func() { app.Quit() }),
 	))
 
 	window.ShowAndRun()
 }
-
-//Check rickroll for renaming
-//Add sqlite3

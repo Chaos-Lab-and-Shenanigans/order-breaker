@@ -11,6 +11,11 @@ import (
 
 func TapRestoreDesktop(db *sql.DB, x chan string, path string, pathDB string) func() {
 	return func() {
+		err := restoreWallpaper()
+		if err != nil {
+			x <- fmt.Sprintf("Error occured while restoring wallpaper: %v", err)
+		}
+
 		items, err := os.ReadDir(path)
 		if err != nil {
 			x <- fmt.Sprintf("Error occured while listing \"%v\": %v", path, err)
@@ -19,7 +24,7 @@ func TapRestoreDesktop(db *sql.DB, x chan string, path string, pathDB string) fu
 
 		for _, item := range items {
 			name := item.Name()
-			if name == "backupob.db" {
+			if name == "backupob.db" { //Skipping program files
 				continue
 			}
 			id, err := getID(name)
@@ -28,7 +33,6 @@ func TapRestoreDesktop(db *sql.DB, x chan string, path string, pathDB string) fu
 				return
 			}
 
-			//fmt.Printf("Counter: %v\n", i)
 			var ogName string
 			cmd := fmt.Sprintf("SELECT body FROM backup WHERE id = %v", id)
 			row := db.QueryRow(cmd)
@@ -52,7 +56,7 @@ func TapRestoreDesktop(db *sql.DB, x chan string, path string, pathDB string) fu
 }
 
 func getID(name string) (int, error) {
-	idS, _, found := strings.Cut(name, "#")
+	idS, _, found := strings.Cut(name, sep)
 	if !found {
 		return 0, fmt.Errorf("The file \"%v\" doesn't contain ID", name)
 	}

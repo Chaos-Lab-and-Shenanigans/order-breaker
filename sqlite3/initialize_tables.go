@@ -20,13 +20,11 @@ func initializeRicky(db *sql.DB) error {
 		return err
 	}
 
-	for range limit {
-		for _, name := range lyrics {
-			cmd := fmt.Sprintf("INSERT INTO ricky(body) VALUES (\"%v\")", name)
-			_, err = db.Exec(cmd)
-			if err != nil {
-				return err
-			}
+	for _, name := range lyrics {
+		cmd := fmt.Sprintf("INSERT INTO ricky(body) VALUES (\"%v\")", name)
+		_, err = db.Exec(cmd)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -62,7 +60,6 @@ func initializeBackup(db *sql.DB, path string, x chan string) error {
 
 		i += 1
 		cmd := fmt.Sprintf("INSERT INTO backup(body) VALUES (\"%v\")", name)
-		fmt.Printf("Item %v: %v\n", i, item.Name())
 		_, err = db.Exec(cmd)
 		if err != nil {
 			err = fmt.Errorf("Error occured while creating backup: %v", err)

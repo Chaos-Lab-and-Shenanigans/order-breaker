@@ -42,7 +42,7 @@ func checkForInit(db *sql.DB, path string) (bool, bool, error) {
 		return ricky, backup, nil
 	}
 
-	if lenR != limit*len(lyrics) {
+	if lenR != len(lyrics) {
 		ricky = true
 	}
 	return ricky, backup, nil
