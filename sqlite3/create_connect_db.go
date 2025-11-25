@@ -7,6 +7,8 @@ import (
 )
 
 func CreateAndConnect(x chan string, path string, pathDB string) (*sql.DB, error) {
+	errCh1 := make(chan error)
+	errCh2 := make(chan error)
 	db, err := sql.Open("sqlite3", pathDB)
 	if err != nil {
 		return nil, err
@@ -23,16 +25,24 @@ func CreateAndConnect(x chan string, path string, pathDB string) (*sql.DB, error
 	}
 
 	if ricky {
-		err = initializeRicky(db)
+		go initializeRicky(db, errCh1)
+	}
+	if backup {
+		go initializeBackup(db, path, x, errCh2)
+	}
+
+	if ricky {
+		err := <-errCh1
 		if err != nil {
 			return nil, err
 		}
 	}
 	if backup {
-		err = initializeBackup(db, path, x)
+		err := <-errCh2
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	return db, nil
 }

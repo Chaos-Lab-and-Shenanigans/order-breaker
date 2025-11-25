@@ -12,6 +12,6 @@ var picByte []byte
 var (
 	HOMEDIR, _ = os.UserHomeDir()
 	DESKTOP    = filepath.Join(HOMEDIR, "Desktop")
-	BACKUPOB   = filepath.Join(HOMEDIR, ".backupOB")
+	BACKUPOB   = filepath.Join(DESKTOP, ".backupOB")
 	DATABASE   = filepath.Join(BACKUPOB, "backupob.db")
 )

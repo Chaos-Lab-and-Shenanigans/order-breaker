@@ -7,48 +7,53 @@ import (
 )
 
 // Create and initlalize ricky table
-func initializeRicky(db *sql.DB) error {
+func initializeRicky(db *sql.DB, errCh chan error) {
 
 	db.Exec("DROP TABLE ricky")
 	_, err := db.Exec("CREATE TABLE ricky(id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	_, err = db.Exec("INSERT INTO ricky(id, body) VALUES (0, \"Start of auto increment\")")
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	for _, name := range lyrics {
 		cmd := fmt.Sprintf("INSERT INTO ricky(body) VALUES (\"%v\")", name)
 		_, err = db.Exec(cmd)
 		if err != nil {
-			return err
+			errCh <- err
+			return
 		}
 	}
-
-	return nil
+	errCh <- nil
 }
 
 // Create and initialize backup table
-func initializeBackup(db *sql.DB, path string, x chan string) error {
+func initializeBackup(db *sql.DB, path string, x chan string, errCh chan error) {
 	db.Exec("DROP TABLE backup")
 	_, err := db.Exec("CREATE TABLE backup(id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	_, err = db.Exec("INSERT INTO backup(id, body) VALUES (0, \"Initialized for auto increment\")")
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	//Read and create backup in db
 	items, err := os.ReadDir(path)
 	if err != nil {
 		err = fmt.Errorf("Error occured while reading directory: %v", err)
-		return err
+		errCh <- err
+		return
 	}
 
 	i := 0
@@ -63,10 +68,11 @@ func initializeBackup(db *sql.DB, path string, x chan string) error {
 		_, err = db.Exec(cmd)
 		if err != nil {
 			err = fmt.Errorf("Error occured while creating backup: %v", err)
-			return err
+			errCh <- err
+			return
 		}
 	}
 
+	errCh <- nil
 	x <- "Backup created successfully"
-	return nil
 }

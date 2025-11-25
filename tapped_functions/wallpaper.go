@@ -8,54 +8,62 @@ import (
 	"github.com/reujab/wallpaper"
 )
 
-func restoreWallpaper() error {
+func restoreWallpaper(errCh chan error) {
 	fmt.Printf("Restore wallpaper: %v\n", backupWall)
 	if backupWall == "" {
-		return nil
+		errCh <- nil
+		return
 	}
+
 	err := wallpaper.SetFromFile(backupWall)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
-	return nil
+
+	errCh <- nil
 }
 
-func setWallpaper(rickyWall []byte, path string) error {
+func setWallpaper(rickyWall []byte, path string, errCh chan error) {
 	fullName := filepath.Join(path, "wall.png")
 	fmt.Printf("Wallpaper: %v", fullName)
 	err := backupWallpaper(fullName)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	err = os.WriteFile(fullName, rickyWall, 0666)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	err = wallpaper.SetFromFile(fullName)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	err = os.Remove(fullName)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
-	return nil
+	errCh <- nil
 }
 
 func backupWallpaper(rickyWall string) error {
-	ogWall, err := wallpaper.Get()
+	currentWall, err := wallpaper.Get()
 	if err != nil {
 		return err
 	}
 
-	if rickyWall == ogWall {
+	if currentWall == rickyWall {
 		return nil
 	}
 
-	backupWall = ogWall
+	backupWall = currentWall
 	return nil
 }
