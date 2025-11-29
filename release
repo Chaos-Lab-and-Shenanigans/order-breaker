@@ -8,6 +8,6 @@ export CC="x86_64-w64-mingw32-gcc"
 fyne package \
   -os windows \
   -release \
-  -id com.gamer.prank \
+  -id prank.rickroll \
   -icon Icon.png \
   ./release

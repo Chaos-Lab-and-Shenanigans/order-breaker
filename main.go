@@ -5,9 +5,10 @@ import (
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	handleastrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/sqlite3"
-	tappedfunctions "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/tapped_functions"
 )
 
 func main() {
@@ -24,11 +25,15 @@ func main() {
 	defer db.Close()
 
 	window.SetContent(container.NewVBox(
-		backupL,
-		widget.NewButton("Restore desktop", tappedfunctions.TapRestoreDesktop(db, logsCh, BACKUPOB, DATABASE)),
-		widget.NewButton("Ricky", tappedfunctions.TapRickRollDesktop(db, logsCh, BACKUPOB, picByte, rickAudio)),
+		welcomeL,
+		layout.NewSpacer(),
+		widget.NewSeparator(),
+		widget.NewButton("Start Astrology?", handleastrology.StartAstro(window, logsCh)),
 		widget.NewButton("Exit", func() { app.Quit() }),
+		widget.NewSeparator(),
+		backupL,
 	))
 
+	window.Resize(windowSize)
 	window.ShowAndRun()
 }
