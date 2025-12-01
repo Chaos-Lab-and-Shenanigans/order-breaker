@@ -12,6 +12,7 @@ const (
 )
 
 var (
+	APP_NAME           = "prank.exe"
 	backupWall         = ""
 	currentWallPath, _ = wallpaper.Get()
 	retErr             = fmt.Errorf("return")

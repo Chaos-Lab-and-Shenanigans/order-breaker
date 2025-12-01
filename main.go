@@ -1,39 +1,60 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"time"
 
-	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	handleastrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
+	astrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/sqlite3"
+	tappedfunctions "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/tapped_functions"
 )
 
 func main() {
-	app := app.New()
-	window := app.NewWindow("Main")
-	backupL := widget.NewLabel("Logs will appear here")
-	logsCh := SetUpdaterChannel(backupL)
-
-	db, err := sqlite3.CreateAndConnect(logsCh, BACKUPOB, DATABASE)
+	db, err := sqlite3.CreateAndConnect(PATH_BACKUPOB, PATH_DB, logsCh)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
+		er := fmt.Sprintf("Error connecting to database: %v", err)
+		windowAst.SetContent(tappedfunctions.CenteredLabel(er + "\n" + "Closing in 5 seconds..."))
+		time.Sleep(5 * time.Second)
 		return
 	}
 	defer db.Close()
 
-	window.SetContent(container.NewVBox(
+	astrology.InitConfig(db, PATH_BACKUPOB, PATH_DB, &rickAudio, &rickWall, windowAst, logsCh, restartCh)
+
+	setStartWindow()
+
+	go showLogs()
+	windowAst.ShowAndRun()
+}
+
+func showLogs() {
+	logWindow := myApp.NewWindow("Logs")
+
+	// 1. Wrap the dynamic log content in a scroll container
+	logContent := container.NewVScroll(logsL)
+	// Set a reasonable minimum size for the log content area
+	logContent.SetMinSize(fyne.NewSize(250, 150))
+
+	logWindow.SetContent(container.NewVBox(
+		logContent,
+	))
+
+	logWindow.Show()
+}
+func setStartWindow() {
+	windowAst.SetContent(container.NewVBox(
 		welcomeL,
 		layout.NewSpacer(),
 		widget.NewSeparator(),
-		widget.NewButton("Start Astrology?", handleastrology.StartAstro(window, logsCh)),
-		widget.NewButton("Exit", func() { app.Quit() }),
+		widget.NewButton("Start Astrology", astrology.StartAstro()),
+		widget.NewButton("Compatibility checker", astrology.StartCC()),
+		widget.NewButton("Exit", func() { myApp.Quit() }),
 		widget.NewSeparator(),
-		backupL,
 	))
 
-	window.Resize(windowSize)
-	window.ShowAndRun()
+	windowAst.Resize(windowSize)
 }

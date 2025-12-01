@@ -1,9 +1,8 @@
-package handleastrology
+package astrology
 
 import (
 	"time"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
@@ -13,7 +12,7 @@ var (
 	inputDate = widget.NewDateEntry()
 )
 
-func firstPage(w fyne.Window) {
+func firstPage() {
 	getAgeL := widget.NewLabel("Enter your date of birth:")
 	inputDate.SetPlaceHolder("MM/DD/YYYY")
 
@@ -22,14 +21,15 @@ func firstPage(w fyne.Window) {
 		inputDate,
 		widget.NewSeparator(),
 		layout.NewSpacer(),
-		widget.NewButton("Next", showDetails(w)),
+		widget.NewButton("Next", showDetails()),
 	)
 
-	w.SetContent(page)
+	cfg.Window.SetContent(page)
 }
 
-func showDetails(w fyne.Window) func() {
+func showDetails() func() {
 	return func() {
+		w := cfg.Window
 		err := inputDate.Validate()
 		if err != nil {
 			inputDate.SetText("")
@@ -37,6 +37,7 @@ func showDetails(w fyne.Window) func() {
 			return
 		}
 
+		player.dob = inputDate.Text
 		descZodiacL := widget.NewLabel("Your zodiac sign:")
 
 		zodiac := GetZodiacSign(*inputDate.Date)
@@ -45,7 +46,7 @@ func showDetails(w fyne.Window) func() {
 		} else {
 			player.zodiacSign.SetText(zodiac)
 		}
-		nextB := widget.NewButton("Continue", next(w))
+		nextB := widget.NewButton("Continue", next())
 
 		page := container.New(
 			layout.NewGridLayout(2),
@@ -62,9 +63,9 @@ func showDetails(w fyne.Window) func() {
 	}
 }
 
-func next(w fyne.Window) func() {
+func next() func() {
 	return func() {
-		secondPage(w)
+		secondPage()
 	}
 }
 

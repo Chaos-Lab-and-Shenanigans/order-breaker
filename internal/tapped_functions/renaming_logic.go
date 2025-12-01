@@ -19,19 +19,18 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 	i := 0
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" { //Skipping program files
+		if name == "backupob.db" || name == APP_NAME { //Skipping program files
 			continue
 		}
 
-		if alreadyMessedUp(name) {
-			fmt.Printf("File \"%v\" already messed up\nExiting...\n", name)
-			errCh <- nil
-			return
+		i += 1
+		if AlreadyMessedUp(name) {
+			fmt.Printf("File \"%v\" already messed up\nSkipping...\n", name)
+			continue
 		}
 
-		i += 1
 		var rickName string
-		id := (i-1)%limit + 1 //Skipping ID no 0
+		id := (i-1)%limit + 1 //Skipping ID no 0 while looping over the limit
 		cmd := fmt.Sprintf("SELECT body FROM ricky WHERE id = %v", id)
 		row := db.QueryRow(cmd)
 		err = row.Scan(&rickName)
@@ -52,7 +51,7 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 	errCh <- nil
 }
 
-func alreadyMessedUp(name string) bool {
+func AlreadyMessedUp(name string) bool {
 	return strings.Contains(name, sep)
 }
 
@@ -65,13 +64,13 @@ func restoreNames(db *sql.DB, path string, errCh chan error) {
 
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" { //Skipping program files
+		if name == "backupob.db" || name == APP_NAME { //Skipping program files
 			continue
 		}
+
 		id, err := getID(name)
-		if err != nil {
-			errCh <- fmt.Errorf("Get rickrolled first mf")
-			return
+		if err != nil { //If id is not in name, then its normal file not renamed one so skip it
+			continue
 		}
 
 		var ogName string

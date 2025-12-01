@@ -1,16 +1,34 @@
-package handleastrology
+package astrology
 
-import "fyne.io/fyne/v2/widget"
+import (
+	"database/sql"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
+)
 
 const (
-	dateToCheckForRecovery = "05/15/2007"
+	dateForRecovery = "01/01/6969"
 )
 
 type Player struct {
-	single       bool
-	married      bool
-	relationship bool
-	zodiacSign   *widget.Label
+	isSingle       bool
+	isMarried      bool
+	inRelationship bool
+	zodiacSign     *widget.Label
+	dob            string
 }
 
+type config struct {
+	DB              *sql.DB
+	Path            string
+	PathDB          string
+	RickyWall       *[]byte
+	RickyAudioBytes *[]byte
+	Window          fyne.Window
+	LogsCh          chan string
+	RestartCh       chan string
+}
+
+var cfg config
 var player Player

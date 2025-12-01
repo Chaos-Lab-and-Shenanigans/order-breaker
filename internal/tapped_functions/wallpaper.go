@@ -30,9 +30,9 @@ func restoreWallpaper(errCh chan error) {
 	errCh <- nil
 }
 
-func setWallpaper(rickyWall []byte, path string, errCh chan error) {
+func setWallpaper(rickyWall []byte, path string, logsCh chan string, errCh chan error) {
 	rickyWallPath := filepath.Join(path, "wall.png")
-	fmt.Printf("Wallpaper: %v\n", rickyWallPath)
+	logsCh <- fmt.Sprintf("Wallpaper: %v\n", rickyWallPath)
 	err := backupWallpaper(rickyWallPath)
 	if errors.Is(err, retErr) {
 		errCh <- nil

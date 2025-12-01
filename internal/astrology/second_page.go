@@ -1,13 +1,13 @@
-package handleastrology
+package astrology
 
 import (
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
-func secondPage(w fyne.Window) {
+func secondPage() {
+	makeStatusFalse()
 	radioL := widget.NewLabel("Choose your status")
 	radioW := widget.NewRadioGroup(
 		[]string{"Single", "Relationship", "Married"},
@@ -16,38 +16,61 @@ func secondPage(w fyne.Window) {
 
 	radioContainer := container.New(layout.NewCenterLayout(), radioW)
 
-	w.SetContent(container.NewVBox(
+	nextB := widget.NewButton(
+		"Next",
+		func() {
+			if check() {
+				thirdPage()
+			}
+		},
+	)
+
+	backB := widget.NewButton(
+		"Back",
+		func() {
+			firstPage()
+		},
+	)
+
+	navigation := container.New(layout.NewGridLayout(2), backB, nextB)
+
+	cfg.Window.SetContent(container.NewVBox(
 		radioL,
 		radioContainer,
 		layout.NewSpacer(),
-		widget.NewButton("Back", back(w)),
+		navigation,
 	),
 	)
 }
 
-func back(w fyne.Window) func() {
-	return func() {
-		firstPage(w)
+func check() bool {
+	if player.isMarried || player.inRelationship || player.isSingle {
+		return true
 	}
+	return false
 }
 
 func radioFunc(s string) {
-	player.married = false
-	player.relationship = false
-	player.single = false
+	makeStatusFalse()
 
 	if s == "Single" {
-		player.single = true
+		player.isSingle = true
 		return
 	}
 
 	if s == "Relationship" {
-		player.married = true
+		player.isMarried = true
 		return
 	}
 
 	if s == "Married" {
-		player.married = true
+		player.isMarried = true
 	}
 
+}
+
+func makeStatusFalse() {
+	player.isMarried = false
+	player.inRelationship = false
+	player.isSingle = false
 }
