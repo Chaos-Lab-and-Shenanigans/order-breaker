@@ -2,13 +2,16 @@ package sqlite3
 
 import (
 	"database/sql"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func CreateAndConnect(path string, pathDB string, logsCh chan string) (*sql.DB, error) {
+func CreateAndConnect(path string, dbName string, logsCh chan string) (*sql.DB, error) {
+	pathDB := filepath.Join(path, dbName)
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
+
 	db, err := sql.Open("sqlite3", pathDB)
 	if err != nil {
 		return nil, err

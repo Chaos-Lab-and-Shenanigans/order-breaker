@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -10,42 +9,49 @@ import (
 	"fyne.io/fyne/v2/widget"
 	astrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/sqlite3"
-	tappedfunctions "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/tapped_functions"
 )
 
 func main() {
-	db, err := sqlite3.CreateAndConnect(PATH_BACKUPOB, PATH_DB, logsCh)
-	if err != nil {
+	db, err := sqlite3.CreateAndConnect(PATH_BACKUPOB, DATABASE, logsCh)
+	if err != nil { //Critical error, only show logs
 		er := fmt.Sprintf("Error connecting to database: %v", err)
-		windowAst.SetContent(tappedfunctions.CenteredLabel(er + "\n" + "Closing in 5 seconds..."))
-		time.Sleep(5 * time.Second)
+		logsCh <- er
+		fyne.Do(showLogs(true))
 		return
 	}
 	defer db.Close()
 
-	astrology.InitConfig(db, PATH_BACKUPOB, PATH_DB, &rickAudio, &rickWall, windowAst, logsCh, restartCh)
+	astrology.InitConfig(db, PATH_BACKUPOB, DATABASE, &rickAudio, &rickWall, windowAst, logsCh, restartCh)
 
 	setStartWindow()
 
-	go showLogs()
+	//	fyne.Do(showLogs(false))
 	windowAst.ShowAndRun()
 }
 
-func showLogs() {
-	logWindow := myApp.NewWindow("Logs")
+func showLogs(showAndRun bool) func() {
+	return func() {
+		logWindow := myApp.NewWindow("Logs")
 
-	// 1. Wrap the dynamic log content in a scroll container
-	logContent := container.NewVScroll(logsL)
-	// Set a reasonable minimum size for the log content area
-	logContent.SetMinSize(fyne.NewSize(250, 150))
+		// 1. Wrap the dynamic log content in a scroll container
+		logContent := container.NewVScroll(logsL)
+		// Set a reasonable minimum size for the log content area
+		logContent.SetMinSize(fyne.NewSize(250, 150))
 
-	logWindow.SetContent(container.NewVBox(
-		logContent,
-	))
+		logWindow.SetContent(container.NewVBox(
+			logContent,
+		))
 
-	logWindow.Show()
+		if showAndRun {
+			logWindow.ShowAndRun()
+		}
+
+		logWindow.Show()
+	}
 }
+
 func setStartWindow() {
+	welcomeL := widget.NewLabel("Welcome to astrology!\nEnter your details and let the app guess your personality ")
 	windowAst.SetContent(container.NewVBox(
 		welcomeL,
 		layout.NewSpacer(),

@@ -74,7 +74,7 @@ func calcStatus(p1Dob *widget.DateEntry, p2Dob *widget.DateEntry) func() {
 func showCompatibility(compatible bool) {
 	descL := widget.NewLabel("Checking compatibility...")
 
-	homeB := widget.NewButton("Examine again", func() { firstPage() })
+	homeB := widget.NewButton("Home", func() { cfg.RestartCh <- "restart" })
 	exitB := widget.NewButton("Exit", func() { fyne.CurrentApp().Quit() })
 
 	navigationButtons := container.New(layout.NewGridLayout(2), exitB, homeB)
@@ -93,11 +93,11 @@ func getLoading(compatible bool, navigationButtons *fyne.Container) *widget.Prog
 	loading := widget.NewProgressBar()
 	loading.Min = 0
 	loading.Max = 100
-	go incrementLoading(loading, compatible, navigationButtons)
+	go loadAndShow(loading, compatible, navigationButtons)
 	return loading
 }
 
-func incrementLoading(loading *widget.ProgressBar, compatible bool, navigationButtons *fyne.Container) {
+func loadAndShow(loading *widget.ProgressBar, compatible bool, navigationButtons *fyne.Container) {
 	fyne.Do(func() {
 		time.Sleep(10 * time.Millisecond)
 		for i := 1.0; i <= 100; i += 1.0 {
@@ -105,32 +105,12 @@ func incrementLoading(loading *widget.ProgressBar, compatible bool, navigationBu
 			time.Sleep(loadingSpeed)
 		}
 
-		var includeExtra bool
-		var nilPlayer Player
 		descL := widget.NewLabel("Compatibility results: ")
-		label := widget.NewLabel("")
-
-		if player != nilPlayer { //to check if player is initialized
-			includeExtra = true
-		}
-
-		if compatible {
-			label.SetText("You two are compatible, at least mathematically...")
-			if includeExtra && (player.isMarried || player.inRelationship) {
-				label.SetText(label.Text + "\nHoping your partner catches you\nAbsolute cinema")
-			}
-		} else {
-			label.SetText("Your choices are same as your mind\nPathetic.")
-			if includeExtra && player.isSingle {
-				label.SetText(label.Text + "\nDon't worry you'll die as a virgin too")
-			}
-		}
-
-		labelContainer := container.New(layout.NewCenterLayout(), label)
+		label := getResultLabel(compatible)
 
 		cfg.Window.SetContent(container.NewVBox(
 			descL,
-			labelContainer,
+			label,
 			layout.NewSpacer(),
 			widget.NewSeparator(),
 			widget.NewButton("See interesting information", rickrollOrRestore()),
@@ -138,4 +118,38 @@ func incrementLoading(loading *widget.ProgressBar, compatible bool, navigationBu
 		))
 	})
 
+}
+
+func getResultLabel(compatible bool) *widget.Label {
+	var includeExtra bool
+	label := widget.NewLabel("")
+	nilPlayer := Player{}
+
+	if player != nilPlayer {
+		includeExtra = true
+	}
+
+	if compatible {
+		label.SetText("You two are compatible, at least mathematically...")
+		if includeExtra {
+			if player.inRelationship || player.isMarried {
+				label.SetText(label.Text + "\nAre you happy?\nIf yes, wait till you see drama.\nAbsolute cinema.")
+			}
+			if player.isSingle {
+				label.SetText(label.Text + "\nStill pretty sure you'll get dumped.\nAbsolute cinema.")
+			}
+		}
+	} else {
+		label.SetText("Your choices are same as your mind\nPathetic.")
+		if includeExtra {
+			if player.inRelationship || player.isMarried {
+				label.SetText(label.Text + "\nStarting to question your life choices?\nHilarious \nIt's just the start, not the end...")
+			}
+			if player.isSingle {
+				label.SetText(label.Text + "\nDon't worry you'll die as a virgin too")
+			}
+		}
+	}
+	label.Alignment = fyne.TextAlignCenter
+	return label
 }

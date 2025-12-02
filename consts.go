@@ -18,11 +18,10 @@ var rickAudio []byte
 
 var (
 	windowSize    = fyne.NewSize(300, 300)
-	welcomeL      = widget.NewLabel("Welcome to astrology!\nEnter your details and let the app guess your personality ")
 	HOMEDIR, _    = os.UserHomeDir()
 	PATH_DESKTOP  = filepath.Join(HOMEDIR, "Desktop")
 	PATH_BACKUPOB = filepath.Join(PATH_DESKTOP, ".backupOB")
-	PATH_DB       = filepath.Join(PATH_BACKUPOB, "backupob.db")
+	DATABASE      = "backupob.db"
 )
 
 // Main window's
