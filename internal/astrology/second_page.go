@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
 func secondPage() {
@@ -33,7 +34,7 @@ func secondPage() {
 
 	navigation := container.New(layout.NewGridLayout(2), backB, nextB)
 
-	cfg.Window.SetContent(container.NewVBox(
+	config.Cfg.Window.SetContent(container.NewVBox(
 		radioL,
 		radioContainer,
 		layout.NewSpacer(),
@@ -43,16 +44,16 @@ func secondPage() {
 }
 
 func check() bool {
-	if player.zodiacSign == nil {
+	if config.User.ZodiacSign == nil {
 		return false
 	}
 
-	switch player.status {
-	case isSingle:
+	switch config.User.Status {
+	case config.IsSingle:
 		return true
-	case inRelationship:
+	case config.InRelationship:
 		return true
-	case isMarried:
+	case config.IsMarried:
 		return true
 	}
 
@@ -61,17 +62,17 @@ func check() bool {
 
 func radioFunc(s string) {
 	if s == "Single" {
-		player.status = isSingle
+		config.User.Status = config.IsSingle
 		return
 	}
 
 	if s == "Relationship" {
-		player.status = isMarried
+		config.User.Status = config.IsMarried
 		return
 	}
 
 	if s == "Married" {
-		player.status = isMarried
+		config.User.Status = config.IsMarried
 	}
 
 }

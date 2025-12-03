@@ -1,8 +1,9 @@
-package tappedfunctions
+package rickroll
 
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -44,7 +45,7 @@ func setWindowRestore(w fyne.Window, restartCh chan string) {
 
 	navigation := container.New(
 		layout.NewGridLayout(2),
-		widget.NewButton("Start again", func() { restartCh <- "restart" }),
+		widget.NewButton("Home", func() { go sendRestart(restartCh) }),
 		widget.NewButton("Exit", func() { fyne.CurrentApp().Quit() }),
 	)
 
@@ -59,6 +60,14 @@ func setWindowRestore(w fyne.Window, restartCh chan string) {
 		navigation,
 	),
 	)
+}
+
+func sendRestart(ch chan string) {
+	select {
+	case ch <- "restart":
+	default:
+		time.Sleep(time.Millisecond)
+	}
 }
 
 func CenteredLabel(s string) *widget.Label {

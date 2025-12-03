@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	tappedfunctions "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/tapped_functions"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/rickroll"
 )
 
 // Create and initlalize ricky table
 func initializeRicky(db *sql.DB, errCh chan error) {
-
 	db.Exec("DROP TABLE ricky")
 	_, err := db.Exec("CREATE TABLE ricky(id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
 	if err != nil {
@@ -24,7 +24,7 @@ func initializeRicky(db *sql.DB, errCh chan error) {
 		return
 	}
 
-	for _, words := range lyrics {
+	for _, words := range config.Lyrics {
 		query := fmt.Sprintf("INSERT INTO ricky(body) VALUES (\"%v\")", words)
 		_, err = db.Exec(query)
 		if err != nil {
@@ -84,7 +84,7 @@ func getNonMessedIndex(items []os.DirEntry) int { //returns the index of item no
 		}
 
 		indexForNonMessed += 1
-		if tappedfunctions.AlreadyMessedUp(item.Name()) {
+		if rickroll.AlreadyMessedUp(item.Name()) {
 			continue
 		}
 		return indexForNonMessed

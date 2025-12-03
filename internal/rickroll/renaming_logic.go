@@ -1,4 +1,4 @@
-package tappedfunctions
+package rickroll
 
 import (
 	"database/sql"
@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
 func rickrollNames(db *sql.DB, path string, errCh chan error) {
@@ -19,7 +21,7 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 	i := 0
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" || name == APP_NAME { //Skipping program files
+		if name == "backupob.db" || name == config.APP_NAME { //Skipping program files
 			continue
 		}
 
@@ -30,7 +32,7 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 		}
 
 		var rickName string
-		id := (i-1)%limit + 1 //Skipping ID no 0 while looping over the limit
+		id := (i-1)%config.Limit + 1 //Skipping ID no 0 while looping over the limit
 		cmd := fmt.Sprintf("SELECT body FROM ricky WHERE id = %v", id)
 		row := db.QueryRow(cmd)
 		err = row.Scan(&rickName)
@@ -39,7 +41,7 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 			return
 		}
 
-		rickName = strconv.Itoa(i) + sep + rickName //For sorting correctly(required for restoring back correctly)
+		rickName = strconv.Itoa(i) + config.Sep + rickName //For sorting correctly(required for restoring back correctly)
 		ogName := filepath.Join(path, name)
 		newName := filepath.Join(path, rickName)
 		err = os.Rename(ogName, newName)
@@ -52,7 +54,7 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 }
 
 func AlreadyMessedUp(name string) bool {
-	return strings.Contains(name, sep)
+	return strings.Contains(name, config.Sep)
 }
 
 func restoreNames(db *sql.DB, path string, errCh chan error) {
@@ -64,7 +66,7 @@ func restoreNames(db *sql.DB, path string, errCh chan error) {
 
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" || name == APP_NAME { //Skipping program files
+		if name == "backupob.db" || name == config.APP_NAME { //Skipping program files
 			continue
 		}
 
@@ -95,7 +97,7 @@ func restoreNames(db *sql.DB, path string, errCh chan error) {
 }
 
 func getID(name string) (int, error) {
-	idS, _, found := strings.Cut(name, sep)
+	idS, _, found := strings.Cut(name, config.Sep)
 	if !found {
 		return 0, fmt.Errorf("The file \"%v\" doesn't contain ID", name)
 	}

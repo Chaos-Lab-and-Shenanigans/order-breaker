@@ -25,7 +25,7 @@ func main() {
 
 	setStartWindow()
 
-	//	fyne.Do(showLogs(false))
+	fyne.Do(showLogs(false))
 	windowAst.ShowAndRun()
 }
 

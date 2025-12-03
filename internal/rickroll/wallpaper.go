@@ -1,4 +1,4 @@
-package tappedfunctions
+package rickroll
 
 import (
 	"errors"
@@ -7,21 +7,22 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 	"github.com/reujab/wallpaper"
 )
 
 func restoreWallpaper(errCh chan error) {
-	if backupWall == "" {
+	if config.BackupWall == "" {
 		errCh <- nil
 		return
 	}
 
-	if strings.Contains(strings.ToLower(backupWall), "transcodedwallpaper") {
+	if strings.Contains(strings.ToLower(config.BackupWall), "transcodedwallpaper") {
 		errCh <- fmt.Errorf("Change the wallpaper back yourself\n")
 		return
 	}
 
-	err := wallpaper.SetFromFile(backupWall)
+	err := wallpaper.SetFromFile(config.BackupWall)
 	if err != nil {
 		errCh <- fmt.Errorf("Error restoring wallpaper: %v", err)
 		return
@@ -34,7 +35,7 @@ func setWallpaper(rickyWall []byte, path string, logsCh chan string, errCh chan 
 	rickyWallPath := filepath.Join(path, "wall.png")
 	logsCh <- fmt.Sprintf("Wallpaper: %v\n", rickyWallPath)
 	err := backupWallpaper(rickyWallPath)
-	if errors.Is(err, retErr) {
+	if errors.Is(err, config.RetErr) {
 		errCh <- nil
 		return
 	}
@@ -71,9 +72,9 @@ func backupWallpaper(rickyWallPath string) error {
 	}
 
 	if currentWallPath == rickyWallPath {
-		return retErr
+		return config.RetErr
 	}
 
-	backupWall = currentWallPath
+	config.BackupWall = currentWallPath
 	return nil
 }

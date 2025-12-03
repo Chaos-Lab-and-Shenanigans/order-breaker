@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
 var (
@@ -24,12 +25,12 @@ func firstPage() {
 		widget.NewButton("Next", showDetails()),
 	)
 
-	cfg.Window.SetContent(page)
+	config.Cfg.Window.SetContent(page)
 }
 
 func showDetails() func() {
 	return func() {
-		w := cfg.Window
+		w := config.Cfg.Window
 		err := inputDate.Validate()
 		if err != nil {
 			inputDate.SetText("")
@@ -37,21 +38,21 @@ func showDetails() func() {
 			return
 		}
 
-		player.dob = inputDate.Text
+		config.User.Dob = inputDate.Text
 		descZodiacL := widget.NewLabel("Your zodiac sign:")
 
 		zodiac := GetZodiacSign(*inputDate.Date)
-		if player.zodiacSign == nil {
-			player.zodiacSign = widget.NewLabel(zodiac)
+		if config.User.ZodiacSign == nil {
+			config.User.ZodiacSign = widget.NewLabel(zodiac)
 		} else {
-			player.zodiacSign.SetText(zodiac)
+			config.User.ZodiacSign.SetText(zodiac)
 		}
 		nextB := widget.NewButton("Continue", next())
 
 		page := container.New(
 			layout.NewGridLayout(2),
 			descZodiacL,
-			player.zodiacSign,
+			config.User.ZodiacSign,
 		)
 
 		w.SetContent(container.NewVBox(

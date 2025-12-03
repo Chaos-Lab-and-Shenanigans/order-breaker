@@ -1,4 +1,4 @@
-package tappedfunctions
+package rickroll
 
 import (
 	"bytes"

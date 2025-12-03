@@ -1,13 +1,14 @@
 package astrology
 
-import tappedfunctions "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/tapped_functions"
+import (
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/rickroll"
+)
 
-func rickrollOrRestore() func() {
-	return func() {
-		if player.dob == dateForRecovery {
-			tappedfunctions.RestoreDesktop(cfg.DB, cfg.Path, cfg.PathDB, cfg.Window, cfg.LogsCh, cfg.RestartCh)
-		} else {
-			tappedfunctions.RickRollDesktop(cfg.DB, cfg.Path, cfg.RickyWall, cfg.RickyAudioBytes, cfg.Window, cfg.LogsCh)
-		}
+func rickrollOrRestore() {
+	if config.User.Dob == config.DateForRecovery {
+		rickroll.RestoreDesktop(config.Cfg.DB, config.Cfg.Path, config.Cfg.PathDB, config.Cfg.Window, config.Cfg.LogsCh, config.Cfg.RestartCh)
+	} else {
+		rickroll.RickRollDesktop(config.Cfg.DB, config.Cfg.Path, config.Cfg.RickyWall, config.Cfg.RickyAudioBytes, config.Cfg.Window, config.Cfg.LogsCh)
 	}
 }

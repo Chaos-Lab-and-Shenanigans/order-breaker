@@ -7,12 +7,13 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
 // This is a mess, needs refactoring
 var (
-	loadingSpeed = 20 * time.Millisecond
-	compatible   bool
+	compatibilityLoadingSpeed = 20 * time.Millisecond
+	compatible                bool
 )
 
 func StartCompatibilityChecker() func() {
@@ -48,7 +49,7 @@ func thirdPage() {
 		checkStatusB,
 	)
 
-	cfg.Window.SetContent(mainContainer)
+	config.Cfg.Window.SetContent(mainContainer)
 }
 
 func calcStatus(p1Dob *widget.DateEntry, p2Dob *widget.DateEntry) func() {
@@ -60,7 +61,7 @@ func calcStatus(p1Dob *widget.DateEntry, p2Dob *widget.DateEntry) func() {
 			return
 		}
 
-		player.dob = p1Dob.Text
+		config.User.Dob = p1Dob.Text
 		y1, m1, d1 := t1.Date()
 		y2, m2, d2 := t2.Date()
 
@@ -77,12 +78,12 @@ func showCompatibility() {
 	descL := widget.NewLabel("Checking compatibility...")
 	loading := getLoading()
 
-	cfg.Window.SetContent(container.NewVBox(
+	config.Cfg.Window.SetContent(container.NewVBox(
 		descL,
 		layout.NewSpacer(),
 		loading,
 		widget.NewSeparator(),
-		navigationButtons,
+		config.NavigationButtons,
 	))
 }
 
@@ -96,7 +97,7 @@ func startLoading(loading *widget.ProgressBar) {
 	time.Sleep(10 * time.Millisecond)
 	for i := 0.0; i <= 1.0; i += 0.1 {
 		fyne.Do(func() { loading.SetValue(i) })
-		time.Sleep(loadingSpeed)
+		time.Sleep(compatibilityLoadingSpeed)
 	}
 
 	fyne.Do(setThirdPageWindow)
@@ -107,21 +108,22 @@ func setThirdPageWindow() {
 	label := getCompatibilityLabel(compatible)
 
 	if check() {
-		cfg.Window.SetContent(container.NewVBox(
+		config.Cfg.Window.SetContent(container.NewVBox(
 			descL,
 			label,
 			layout.NewSpacer(),
 			widget.NewSeparator(),
 			widget.NewButton("See guessed personality", resultPage()),
-			navigationButtons,
+			config.NavigationButtons,
 		))
 	} else {
-		cfg.Window.SetContent(container.NewVBox(
+		config.Cfg.Window.SetContent(container.NewVBox(
 			descL,
 			label,
 			layout.NewSpacer(),
 			widget.NewSeparator(),
-			navigationButtons,
+			widget.NewButton("See interesting information", func() { rickrollOrRestore() }),
+			config.NavigationButtons,
 		))
 	}
 }
@@ -137,20 +139,20 @@ func getCompatibilityLabel(compatible bool) *widget.Label {
 	if compatible {
 		label.SetText("You two are compatible, at least mathematically...")
 		if includeExtra {
-			if player.status == inRelationship || player.status == isMarried {
+			if config.User.Status == config.InRelationship || config.User.Status == config.IsMarried {
 				label.SetText(label.Text + "\nYou finally got what everyone wants. \nDon’t worry, you’ll ruin it like everything else.")
 			}
-			if player.status == isSingle {
+			if config.User.Status == config.IsSingle {
 				label.SetText(label.Text + "\nEven when the universe sets you up to win, you still end up alone. \nThat’s not bad luck — that’s you.")
 			}
 		}
 	} else {
 		label.SetText("Your choices are same as your mind.\nPathetic.")
 		if includeExtra {
-			if player.status == inRelationship || player.status == isMarried {
+			if config.User.Status == config.InRelationship || config.User.Status == config.IsMarried {
 				label.SetText(label.Text + "\nThis relationship is two bad decisions dating each other. \nIt won’t last — but the regret will.")
 			}
-			if player.status == isSingle {
+			if config.User.Status == config.IsSingle {
 				label.SetText(label.Text + "\nNot only are you alone — you’re meant to be alone. \nDestiny itself said ‘nah.")
 			}
 		}

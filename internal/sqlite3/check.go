@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
 // Checks if initialzation is required for both tables depending on lenght in DB vs Folder
@@ -40,7 +42,7 @@ func checkForInit(db *sql.DB, path string, logsCh chan string) (bool, bool, erro
 		return ricky, backup, nil
 	}
 
-	if lenR != len(lyrics) {
+	if lenR != len(config.Lyrics) {
 		ricky = true
 	}
 	return ricky, backup, nil
