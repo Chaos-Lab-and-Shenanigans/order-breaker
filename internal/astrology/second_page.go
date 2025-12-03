@@ -19,7 +19,7 @@ func secondPage() {
 	nextB := widget.NewButton(
 		"Next",
 		func() {
-			if check() {
+			if config.Check() {
 				thirdPage()
 			}
 		},
@@ -41,23 +41,6 @@ func secondPage() {
 		navigation,
 	),
 	)
-}
-
-func check() bool {
-	if config.User.ZodiacSign == nil {
-		return false
-	}
-
-	switch config.User.Status {
-	case config.IsSingle:
-		return true
-	case config.InRelationship:
-		return true
-	case config.IsMarried:
-		return true
-	}
-
-	return false
 }
 
 func radioFunc(s string) {

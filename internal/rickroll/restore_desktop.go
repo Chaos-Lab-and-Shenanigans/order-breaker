@@ -1,55 +1,47 @@
 package rickroll
 
 import (
-	"database/sql"
 	"fmt"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
-func RestoreDesktop(db *sql.DB, path string, pathDB string, w fyne.Window, logsCh chan string, restartCh chan string) {
+func RestoreDesktop() {
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
 
 	go restoreWallpaper(errCh1)
-	go restoreNames(db, path, errCh2)
+	go restoreNames(errCh2)
 	go stopAudio()
 
 	err := <-errCh1
 	if err != nil {
-		logsCh <- fmt.Sprintf("%v", err)
+		config.Cfg.LogsCh <- fmt.Sprintf("%v", err)
 		return
 	}
 
 	err = <-errCh2
 	if err != nil {
-		logsCh <- fmt.Sprintf("Successfully recovered the madness\n %v", err)
+		config.Cfg.LogsCh <- fmt.Sprintf("Error occured while restoring file: %v", err)
 		return
 	}
 
-	setWindowRestore(w, restartCh)
-
-	logsCh <- "Successfully recovered the madness"
+	setWindowRestore()
+	config.Cfg.LogsCh <- "Successfully recovered the madness"
 }
 
-func setWindowRestore(w fyne.Window, restartCh chan string) {
+func setWindowRestore() {
 	descL := CenteredLabel("Restored desktop successfully!")
 	descL.TextStyle.Bold = true
 
 	quote := CenteredLabel("\"Why suffer alone when you have friends\"")
 	quote.TextStyle.Italic = true
 
-	navigation := container.New(
-		layout.NewGridLayout(2),
-		widget.NewButton("Home", func() { go sendRestart(restartCh) }),
-		widget.NewButton("Exit", func() { fyne.CurrentApp().Quit() }),
-	)
-
-	w.SetContent(container.NewVBox(
+	config.Cfg.Window.SetContent(container.NewVBox(
 		descL,
 		CenteredLabel("Share with your single friends."),
 		quote,
@@ -57,17 +49,9 @@ func setWindowRestore(w fyne.Window, restartCh chan string) {
 		CenteredLabel("🙂"),
 		layout.NewSpacer(),
 		widget.NewSeparator(),
-		navigation,
+		config.HomeExitButtons,
 	),
 	)
-}
-
-func sendRestart(ch chan string) {
-	select {
-	case ch <- "restart":
-	default:
-		time.Sleep(time.Millisecond)
-	}
 }
 
 func CenteredLabel(s string) *widget.Label {

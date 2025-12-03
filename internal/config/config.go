@@ -3,10 +3,12 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/reujab/wallpaper"
 )
 
 // rickroll configuration
@@ -16,10 +18,9 @@ const (
 )
 
 var (
-	APP_NAME           = "astrology.exe"
-	BackupWall         = ""
-	CurrentWallPath, _ = wallpaper.Get()
-	RetErr             = fmt.Errorf("return")
+	APP_NAME   = "astrology.exe"
+	BackupWall = ""
+	RetErr     = fmt.Errorf("return")
 )
 
 // sqlite3 pkg's config
@@ -56,7 +57,7 @@ type Player struct {
 type config struct {
 	DB              *sql.DB
 	Path            string
-	PathDB          string
+	DBName          string
 	RickyWall       *[]byte
 	RickyAudioBytes *[]byte
 	Window          fyne.Window
@@ -65,10 +66,42 @@ type config struct {
 }
 
 var (
-	Cfg               config
-	User              Player
-	NavigationButtons *fyne.Container
+	Cfg                       config
+	User                      Player
+	CompatibilityLoadingSpeed = 20 * time.Millisecond
+	Compatible                bool
+
+	HomeExitButtons = container.New(
+		layout.NewGridLayout(2),
+		widget.NewButton("Exit", func() { fyne.CurrentApp().Quit() }),
+		widget.NewButton("Home", func() { restartApp() }),
+	)
 )
+
+func restartApp() {
+	select {
+	case Cfg.RestartCh <- "restart":
+	default:
+		time.Sleep(time.Millisecond)
+	}
+}
+
+func Check() bool {
+	if User.ZodiacSign == nil {
+		return false
+	}
+
+	switch User.Status {
+	case IsSingle:
+		return true
+	case InRelationship:
+		return true
+	case IsMarried:
+		return true
+	}
+
+	return false
+}
 
 // Roasting lines
 var Roasts = map[string]map[status]string{

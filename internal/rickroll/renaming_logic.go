@@ -1,7 +1,6 @@
 package rickroll
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,8 +10,9 @@ import (
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
-func rickrollNames(db *sql.DB, path string, errCh chan error) {
-	items, err := os.ReadDir(path)
+func rickrollNames(errCh chan error) {
+	dbName := config.Cfg.DBName
+	items, err := os.ReadDir(config.Cfg.Path)
 	if err != nil {
 		errCh <- fmt.Errorf("Error occured while reading directory: %v", err)
 		return
@@ -21,20 +21,20 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 	i := 0
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" || name == config.APP_NAME { //Skipping program files
+		if name == dbName || name == config.APP_NAME { //Skipping program files
 			continue
 		}
 
 		i += 1
 		if AlreadyMessedUp(name) {
-			fmt.Printf("File \"%v\" already messed up\nSkipping...\n", name)
+			config.Cfg.LogsCh <- fmt.Sprintf("File \"%v\" already messed up\nSkipping...\n", name)
 			continue
 		}
 
 		var rickName string
 		id := (i-1)%config.Limit + 1 //Skipping ID no 0 while looping over the limit
 		cmd := fmt.Sprintf("SELECT body FROM ricky WHERE id = %v", id)
-		row := db.QueryRow(cmd)
+		row := config.Cfg.DB.QueryRow(cmd)
 		err = row.Scan(&rickName)
 		if err != nil {
 			errCh <- fmt.Errorf("Error occured while scanning row#%v: %v", i, err)
@@ -42,8 +42,8 @@ func rickrollNames(db *sql.DB, path string, errCh chan error) {
 		}
 
 		rickName = strconv.Itoa(i) + config.Sep + rickName //For sorting correctly(required for restoring back correctly)
-		ogName := filepath.Join(path, name)
-		newName := filepath.Join(path, rickName)
+		ogName := filepath.Join(config.Cfg.Path, name)
+		newName := filepath.Join(config.Cfg.Path, rickName)
 		err = os.Rename(ogName, newName)
 		if err != nil {
 			errCh <- fmt.Errorf("Error renaming file: %v", err)
@@ -57,16 +57,17 @@ func AlreadyMessedUp(name string) bool {
 	return strings.Contains(name, config.Sep)
 }
 
-func restoreNames(db *sql.DB, path string, errCh chan error) {
-	items, err := os.ReadDir(path)
+func restoreNames(errCh chan error) {
+	dbName := config.Cfg.DBName
+	items, err := os.ReadDir(config.Cfg.Path)
 	if err != nil {
-		errCh <- fmt.Errorf("Error occured while listing \"%v\": %v", path, err)
+		errCh <- fmt.Errorf("Error occured while listing \"%v\": %v", config.Cfg.Path, err)
 		return
 	}
 
 	for _, item := range items {
 		name := item.Name()
-		if name == "backupob.db" || name == config.APP_NAME { //Skipping program files
+		if name == dbName || name == config.APP_NAME { //Skipping program files
 			continue
 		}
 
@@ -75,19 +76,19 @@ func restoreNames(db *sql.DB, path string, errCh chan error) {
 			continue
 		}
 
-		var ogName string
+		var realName string
 		cmd := fmt.Sprintf("SELECT body FROM backup WHERE id = %v", id)
-		row := db.QueryRow(cmd)
-		err = row.Scan(&ogName)
+		row := config.Cfg.DB.QueryRow(cmd)
+		err = row.Scan(&realName)
 		if err != nil {
 			errCh <- fmt.Errorf("Error while scanning row#%v: %v", id, err)
 			return
 		}
 
-		oldName := filepath.Join(path, name)
-		ogName = filepath.Join(path, ogName)
+		oldName := filepath.Join(config.Cfg.Path, name)
+		realName = filepath.Join(config.Cfg.Path, realName)
 
-		err = os.Rename(oldName, ogName)
+		err = os.Rename(oldName, realName)
 		if err != nil {
 			errCh <- fmt.Errorf("Error while renaming file: %v", err)
 			return

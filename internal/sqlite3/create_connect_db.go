@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"path/filepath"
 
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func CreateAndConnect(path string, dbName string, logsCh chan string) (*sql.DB, error) {
-	pathDB := filepath.Join(path, dbName)
+func CreateAndConnect() (*sql.DB, error) {
+	pathDB := filepath.Join(config.Cfg.Path, config.Cfg.DBName)
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
 
@@ -22,16 +23,20 @@ func CreateAndConnect(path string, dbName string, logsCh chan string) (*sql.DB, 
 		return nil, err
 	}
 
-	ricky, backup, err := checkForInit(db, path, logsCh)
+	if config.Cfg.DB == nil {
+		config.Cfg.DB = db
+	}
+
+	ricky, backup, err := checkForInit()
 	if err != nil {
 		return nil, err
 	}
 
 	if ricky {
-		go initializeRicky(db, errCh1)
+		go initializeRicky(errCh1)
 	}
 	if backup {
-		go initializeBackup(db, path, logsCh, errCh2)
+		go initializeBackup(errCh2)
 	}
 
 	//return errors, if any

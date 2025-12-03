@@ -6,11 +6,25 @@ import (
 )
 
 func setUpdaterChannel(x *widget.Label) chan string {
+	const logBatchSize = 10
 	channel := make(chan string)
+	x.Selectable = true
+
 	go func() {
+		// Counter to track how many messages have been received in the current batch
+		messageCount := 0
+
 		for text := range channel {
+			messageCount++
 			fyne.Do(func() {
-				x.SetText(x.Text + "\n" + text)
+				// 2. Check if the counter hits the batch size threshold
+				if messageCount > 0 && messageCount%logBatchSize == 0 {
+					// Insert an extra blank line to separate the batches
+					x.SetText(x.Text + "\n\n" + text)
+				} else {
+					// Regular append
+					x.SetText(x.Text + "\n" + text)
+				}
 			})
 		}
 	}()

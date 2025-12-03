@@ -45,7 +45,7 @@ func resultPage() func() {
 					layout.NewSpacer(),
 					widget.NewSeparator(),
 					widget.NewButton("See interesting information", func() { rickrollOrRestore() }),
-					config.NavigationButtons,
+					config.HomeExitButtons,
 				))
 			})
 		}()

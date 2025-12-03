@@ -5,6 +5,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
 )
@@ -15,7 +16,7 @@ var (
 	otoCtx *oto.Context
 )
 
-func playAudio(rickAudBytes []byte, errCh chan error) {
+func playAudio(errCh chan error) {
 	//check if player is already initializated
 	if player != nil {
 		player.Play()
@@ -24,7 +25,7 @@ func playAudio(rickAudBytes []byte, errCh chan error) {
 		return
 	}
 
-	audioReader := bytes.NewReader(rickAudBytes)
+	audioReader := bytes.NewReader(*config.Cfg.RickyAudioBytes)
 	decodedMP3, err := mp3.NewDecoder(audioReader)
 	if err != nil {
 		errCh <- err

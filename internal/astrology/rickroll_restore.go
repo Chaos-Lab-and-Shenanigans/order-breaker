@@ -7,8 +7,8 @@ import (
 
 func rickrollOrRestore() {
 	if config.User.Dob == config.DateForRecovery {
-		rickroll.RestoreDesktop(config.Cfg.DB, config.Cfg.Path, config.Cfg.PathDB, config.Cfg.Window, config.Cfg.LogsCh, config.Cfg.RestartCh)
+		rickroll.RestoreDesktop()
 	} else {
-		rickroll.RickRollDesktop(config.Cfg.DB, config.Cfg.Path, config.Cfg.RickyWall, config.Cfg.RickyAudioBytes, config.Cfg.Window, config.Cfg.LogsCh)
+		rickroll.RickRollDesktop()
 	}
 }

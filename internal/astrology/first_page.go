@@ -42,11 +42,8 @@ func showDetails() func() {
 		descZodiacL := widget.NewLabel("Your zodiac sign:")
 
 		zodiac := GetZodiacSign(*inputDate.Date)
-		if config.User.ZodiacSign == nil {
-			config.User.ZodiacSign = widget.NewLabel(zodiac)
-		} else {
-			config.User.ZodiacSign.SetText(zodiac)
-		}
+
+		config.User.ZodiacSign = widget.NewLabel(zodiac)
 		nextB := widget.NewButton("Continue", next())
 
 		page := container.New(

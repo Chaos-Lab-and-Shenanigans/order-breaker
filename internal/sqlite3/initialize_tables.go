@@ -1,7 +1,6 @@
 package sqlite3
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
@@ -9,8 +8,11 @@ import (
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/rickroll"
 )
 
+var db = config.Cfg.DB
+
 // Create and initlalize ricky table
-func initializeRicky(db *sql.DB, errCh chan error) {
+func initializeRicky(errCh chan error) {
+	db := config.Cfg.DB
 	db.Exec("DROP TABLE ricky")
 	_, err := db.Exec("CREATE TABLE ricky(id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
 	if err != nil {
@@ -35,8 +37,8 @@ func initializeRicky(db *sql.DB, errCh chan error) {
 	errCh <- nil
 }
 
-func initializeBackup(db *sql.DB, path string, logsCh chan string, errCh chan error) {
-	items, err := os.ReadDir(path)
+func initializeBackup(errCh chan error) {
+	items, err := os.ReadDir(config.Cfg.Path)
 	if err != nil {
 		errCh <- err
 	}
@@ -45,22 +47,22 @@ func initializeBackup(db *sql.DB, path string, logsCh chan string, errCh chan er
 
 	if index == 1 {
 		fmt.Println("Recreating backup")
-		err = recreateBackup(db, items, logsCh)
+		err = recreateBackup(items)
 		errCh <- err
 	} else {
 		fmt.Println("Adding to existing backup")
-		err = addToExistingTable(db, items, index)
+		err = addToExistingTable(items, index)
 		errCh <- err
 	}
 	errCh <- nil
 }
 
-func addToExistingTable(db *sql.DB, items []os.DirEntry, index int) error {
+func addToExistingTable(items []os.DirEntry, index int) error {
 	neededItems := items[index-1:] //neededItems contains only those items that need to be stored
 	for i, item := range neededItems {
 		name := item.Name()
 		fmt.Printf("Item %v: %v\n", i+1, name)
-		if name == "backupob.db" {
+		if name == config.Cfg.DBName || name == config.APP_NAME {
 			fmt.Println("skipped db file")
 			continue
 		}
@@ -93,7 +95,7 @@ func getNonMessedIndex(items []os.DirEntry) int { //returns the index of item no
 }
 
 // Create and initialize backup table
-func recreateBackup(db *sql.DB, items []os.DirEntry, logsCh chan string) error {
+func recreateBackup(items []os.DirEntry) error {
 	db.Exec("DROP TABLE backup")
 	_, err := db.Exec("CREATE TABLE backup(id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
 	if err != nil {
@@ -106,11 +108,11 @@ func recreateBackup(db *sql.DB, items []os.DirEntry, logsCh chan string) error {
 	}
 
 	//Read and create backup in database
-	err = addToExistingTable(db, items, 1)
+	err = addToExistingTable(items, 1)
 	if err != nil {
 		return err
 	}
 
-	logsCh <- "Backup created successfully"
+	config.Cfg.LogsCh <- "Backup created successfully"
 	return nil
 }

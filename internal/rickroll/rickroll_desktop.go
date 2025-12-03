@@ -1,47 +1,47 @@
 package rickroll
 
 import (
-	"database/sql"
 	"fmt"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 )
 
-func RickRollDesktop(db *sql.DB, path string, rickyWall *[]byte, rickAudioBytes *[]byte, w fyne.Window, logsCh chan string) {
+func RickRollDesktop() {
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
 	errCh3 := make(chan error)
 
-	go setWallpaper(*rickyWall, path, logsCh, errCh1)
-	go rickrollNames(db, path, errCh2)
-	go playAudio(*rickAudioBytes, errCh3)
+	go setWallpaper(errCh1)
+	go rickrollNames(errCh2)
+	go playAudio(errCh3)
 
 	err := <-errCh1
 	if err != nil {
-		logsCh <- fmt.Sprintf("Error occured while setting wallpaper: %v", err)
+		config.Cfg.LogsCh <- fmt.Sprintf("Error occured while setting wallpaper: %v", err)
 		return
 	}
 
 	err = <-errCh2
 	if err != nil {
-		logsCh <- fmt.Sprintf("Error occured while rickrolling names: %v", err)
+		config.Cfg.LogsCh <- fmt.Sprintf("Error occured while rickrolling names: %v", err)
 		return
 	}
 
 	err = <-errCh3
 	if err != nil {
-		logsCh <- fmt.Sprintf("Error occured while playing audio: %v", err)
+		config.Cfg.LogsCh <- fmt.Sprintf("Error occured while playing audio: %v", err)
 		return
 	}
 
-	logsCh <- "Rick Rolled successfully"
-	setWindowRR(w)
+	config.Cfg.LogsCh <- "Rick Rolled successfully"
+	setWindowRR()
 }
 
-func setWindowRR(w fyne.Window) {
+func setWindowRR() {
+	w := config.Cfg.Window
 	descL := widget.NewLabel("Check out your desktop brother 🙂")
 	descContainer := container.New(layout.NewCenterLayout(), descL)
 

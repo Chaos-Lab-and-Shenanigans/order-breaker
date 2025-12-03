@@ -1,7 +1,6 @@
 package sqlite3
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
@@ -9,11 +8,13 @@ import (
 )
 
 // Checks if initialzation is required for both tables depending on lenght in DB vs Folder
-func checkForInit(db *sql.DB, path string, logsCh chan string) (bool, bool, error) {
+func checkForInit() (bool, bool, error) {
 	var backup bool
 	var ricky bool
 	var lenR int
 	var lenB int
+	db := config.Cfg.DB
+	path := config.Cfg.Path
 
 	//Backup table's check
 	row := db.QueryRow("SELECT COUNT(*) FROM backup")
@@ -28,7 +29,7 @@ func checkForInit(db *sql.DB, path string, logsCh chan string) (bool, bool, erro
 		return ricky, backup, err
 	}
 
-	logsCh <- fmt.Sprintf("\nLength in db: %v\nLength in folder: %v\n", lenB, len(items))
+	config.Cfg.LogsCh <- fmt.Sprintf("\nLength in db: %v\nLength in folder: %v\n", lenB, len(items))
 
 	if lenB != len(items) {
 		backup = true
