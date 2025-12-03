@@ -10,6 +10,7 @@ import (
 )
 
 func RickRollDesktop() {
+	config.GotRickRolled = true
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
 	errCh3 := make(chan error)
@@ -55,5 +56,6 @@ func setWindowRR() {
 		widget.NewButton("STOP", func() {
 			descL.SetText(descL.Text + "\n" + "Fuck off man")
 		}),
+		widget.NewButton("Home", func() { config.Cfg.ControlCh <- "ghost" }),
 	))
 }

@@ -11,9 +11,9 @@ func StartAstro() func() {
 	}
 }
 
-func InitConfig(path string, dbName string, rickAudioBytes *[]byte, rickWallBytes *[]byte, w fyne.Window, logsCh chan string, restartCh chan string) {
+func InitConfig(path string, dbName string, rickAudioBytes *[]byte, rickWallBytes *[]byte, w fyne.Window, logsCh chan string, controlCh chan string) {
 	config.Cfg.LogsCh = logsCh
-	config.Cfg.RestartCh = restartCh
+	config.Cfg.ControlCh = controlCh
 	config.Cfg.Path = path
 	config.Cfg.DBName = dbName
 	config.Cfg.RickyAudioBytes = rickAudioBytes

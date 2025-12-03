@@ -30,5 +30,5 @@ var (
 	windowAst = myApp.NewWindow("Astrology")
 	logsL     = widget.NewLabel("")
 	logsCh    = setUpdaterChannel(logsL)
-	restartCh = getRestartChannel()
+	controlCh = getControlCh()
 )

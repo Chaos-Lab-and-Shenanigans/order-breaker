@@ -11,6 +11,7 @@ import (
 )
 
 func RestoreDesktop() {
+	config.GotRickRolled = false
 	errCh1 := make(chan error)
 	errCh2 := make(chan error)
 

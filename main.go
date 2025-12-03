@@ -8,12 +8,13 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	astrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/sqlite3"
 )
 
 // Fix bug: Store backup wall path on db
 func main() {
-	astrology.InitConfig(PATH_BACKUPOB, DATABASE, &rickAudio, &rickWall, windowAst, logsCh, restartCh)
+	astrology.InitConfig(PATH_BACKUPOB, DATABASE, &rickAudio, &rickWall, windowAst, logsCh, controlCh)
 	db, err := sqlite3.CreateAndConnect()
 	if err != nil { //Critical error, only show logs
 		er := fmt.Sprintf("Error connecting to database: %v", err)
@@ -58,7 +59,7 @@ func setStartWindow() {
 		widget.NewSeparator(),
 		widget.NewButton("Start Astrology", astrology.StartAstro()),
 		widget.NewButton("Compatibility checker", astrology.StartCompatibilityChecker()),
-		widget.NewButton("Exit", func() { myApp.Quit() }),
+		widget.NewButton("Exit", config.HandleExit),
 		widget.NewSeparator(),
 	))
 

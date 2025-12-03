@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
@@ -17,12 +19,11 @@ func setUpdaterChannel(x *widget.Label) chan string {
 		for text := range channel {
 			messageCount++
 			fyne.Do(func() {
-				// 2. Check if the counter hits the batch size threshold
+				// Check if the counter hits the batch size threshold
 				if messageCount > 0 && messageCount%logBatchSize == 0 {
 					// Insert an extra blank line to separate the batches
 					x.SetText(x.Text + "\n\n" + text)
 				} else {
-					// Regular append
 					x.SetText(x.Text + "\n" + text)
 				}
 			})
@@ -31,14 +32,46 @@ func setUpdaterChannel(x *widget.Label) chan string {
 	return channel
 }
 
-func getRestartChannel() chan string {
-	channel := make(chan string)
+func getControlCh() chan string {
+	controlCh := make(chan string)
 	go func() {
-		msg := <-channel
-		if msg == "restart" {
-			fyne.Do(func() { setStartWindow() })
+		for msg := range controlCh {
+			fyne.Do(respond(msg))
 		}
 	}()
 
-	return channel
+	return controlCh
+}
+
+func respond(msg string) func() {
+	return func() {
+		switch msg {
+		case "restart":
+			fyne.Do(func() { setStartWindow() })
+		case "ghost":
+			fyne.Do(ghostUser)
+		case "exit":
+			fyne.Do(exit)
+		}
+	}
+}
+
+func exit() {
+	fyne.CurrentApp().Quit()
+}
+
+// Show the screen again and again
+func ghostUser() {
+	go func() {
+		i := 0
+		for {
+			if i == 0 { //Go to home page if Home button was pressed first time
+				fyne.Do(func() { setStartWindow() })
+				i = 1
+			} else { //Ghost otherwise
+				fyne.Do(func() { windowAst.Show() })
+			}
+			time.Sleep(5 * time.Second)
+		}
+	}()
 }

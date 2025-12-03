@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/rickroll"
 )
 
 // This is a mess, needs refactoring
@@ -19,9 +20,7 @@ func StartCompatibilityChecker() func() {
 }
 
 func thirdPage() {
-	descL := widget.NewLabel("Compatibility check")
-	descContainer := container.New(layout.NewCenterLayout(), descL) //Center this shit
-
+	descL := rickroll.CenteredLabel("Compatibility check")
 	p1 := widget.NewLabel("Enter your date of birth:")
 	p2 := widget.NewLabel("Enter the date of brith of person you're interested in:")
 
@@ -35,7 +34,7 @@ func thirdPage() {
 	checkStatusB := widget.NewButton("Check status", calcStatus(p1Dob, p2Dob))
 
 	mainContainer := container.NewVBox(
-		descContainer,
+		descL,
 		p1Container,
 		p1Dob,
 		p2Container,

@@ -62,7 +62,7 @@ type config struct {
 	RickyAudioBytes *[]byte
 	Window          fyne.Window
 	LogsCh          chan string
-	RestartCh       chan string
+	ControlCh       chan string
 }
 
 var (
@@ -70,20 +70,27 @@ var (
 	User                      Player
 	CompatibilityLoadingSpeed = 20 * time.Millisecond
 	Compatible                bool
+	GotRickRolled             bool
 
 	HomeExitButtons = container.New(
 		layout.NewGridLayout(2),
-		widget.NewButton("Exit", func() { fyne.CurrentApp().Quit() }),
-		widget.NewButton("Home", func() { restartApp() }),
+		widget.NewButton("Exit", HandleExit),
+		widget.NewButton("Home", func() { Cfg.ControlCh <- "restart" }),
 	)
 )
 
-func restartApp() {
-	select {
-	case Cfg.RestartCh <- "restart":
-	default:
-		time.Sleep(time.Millisecond)
+func HandleExit() {
+	if GotRickRolled {
+		extraL := widget.NewLabel("Exit your life, mf")
+		extraL.Alignment = fyne.TextAlignCenter
+
+		newContainer := container.NewVBox(Cfg.Window.Content(), extraL)
+
+		Cfg.Window.SetContent(newContainer)
+	} else {
+		Cfg.ControlCh <- "exit"
 	}
+
 }
 
 func Check() bool {

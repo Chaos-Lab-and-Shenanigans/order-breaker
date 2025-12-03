@@ -22,13 +22,13 @@ func firstPage() {
 		inputDate,
 		widget.NewSeparator(),
 		layout.NewSpacer(),
-		widget.NewButton("Next", showDetails()),
+		widget.NewButton("Next", showFirstPageDetails()),
 	)
 
 	config.Cfg.Window.SetContent(page)
 }
 
-func showDetails() func() {
+func showFirstPageDetails() func() {
 	return func() {
 		w := config.Cfg.Window
 		err := inputDate.Validate()
