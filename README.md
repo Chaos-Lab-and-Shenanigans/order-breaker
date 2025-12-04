@@ -1,2 +1,2 @@
-# order-breaker
+# Astrology rickroller
 ![wallpaper](assets/wall.png)
