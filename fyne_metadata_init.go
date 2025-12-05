@@ -10,7 +10,7 @@ func init() {
 		ID: "prank.rickroll",
 		Name: "prank",
 		Version: "1.0.0",
-		Build: 12,
+		Build: 13,
 		Icon: &fyne.StaticResource{
 	StaticName: "Icon-512.png",
 	StaticContent: []byte{

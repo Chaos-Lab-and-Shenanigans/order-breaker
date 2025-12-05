@@ -69,7 +69,7 @@ func calcStatus(p1Dob *widget.DateEntry, p2Dob *widget.DateEntry) func() {
 }
 
 func showCompatibility() {
-	descL := widget.NewLabel("Checking compatibility...")
+	descL := widget.NewLabel("Checking Star Charts...")
 	loading := getLoading()
 
 	config.Cfg.Window.SetContent(container.NewVBox(
