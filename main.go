@@ -7,9 +7,9 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	astrology "github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/astrology"
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/sqlite3"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/astrology"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/sqlite3"
 )
 
 // Fix bug: Store backup wall path on db

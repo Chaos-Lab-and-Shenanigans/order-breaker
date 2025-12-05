@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
 )
 
 // Checks if initialzation is required for both tables depending on lenght in DB vs Folder

@@ -5,9 +5,11 @@
 export CC="x86_64-w64-mingw32-gcc"
 
 # Now run the fyne package command
+# Use the -name flag to set the output executable file name to 'astrology'
 fyne package \
-  -os windows \
+  -os linux \
   -release \
-  -id prank.rickroll \
+  -id astrology.rickroll \
   -icon Icon.png \
+  -name astrology \
   ./release

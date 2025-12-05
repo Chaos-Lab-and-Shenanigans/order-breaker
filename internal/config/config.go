@@ -26,6 +26,7 @@ const (
 	APP_NAME       = "astrology.exe"
 	Sep            = "~"          //Used to separate id and lyrics
 	DateForRestore = "01/01/6969" //Date to activate restore instead of rickroll
+	LogBatchSize   = 10
 )
 
 // For player data storing
@@ -48,7 +49,7 @@ type config struct {
 // rickroll configuration
 
 var (
-	//These are constants too
+	//These are constants too, well kinda...
 	HOMEDIR, _   = os.UserHomeDir()
 	PATH_DESKTOP = filepath.Join(HOMEDIR, "Desktop")
 	PATH         = PATH_DESKTOP //Path where the chaos occurs

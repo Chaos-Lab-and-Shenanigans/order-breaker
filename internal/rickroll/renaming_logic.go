@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
 )
 
 func rickrollNames(errCh chan error) {

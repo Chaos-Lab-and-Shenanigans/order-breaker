@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"path/filepath"
 
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 

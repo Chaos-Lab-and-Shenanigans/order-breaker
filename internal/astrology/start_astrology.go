@@ -2,7 +2,7 @@ package astrology
 
 import (
 	"fyne.io/fyne/v2"
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
 )
 
 func StartAstro() func() {

@@ -1,4 +1,4 @@
-module github.com/Chaos-Lab-and-Shenanigans/order-breaker
+module github.com/Chaos-Lab-and-Shenanigans/astrology
 
 go 1.25.1
 

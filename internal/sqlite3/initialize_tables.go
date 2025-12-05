@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/rickroll"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/rickroll"
 )
 
 // Create and initlalize ricky table

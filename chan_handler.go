@@ -5,11 +5,10 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Chaos-Lab-and-Shenanigans/order-breaker/internal/config"
+	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
 )
 
 func setUpdaterChannel(x *widget.Label) chan string {
-	const logBatchSize = 10
 	channel := make(chan string)
 	x.Selectable = true
 
@@ -21,7 +20,7 @@ func setUpdaterChannel(x *widget.Label) chan string {
 			messageCount++
 			fyne.Do(func() {
 				// Check if the counter hits the batch size threshold
-				if messageCount > 0 && messageCount%logBatchSize == 0 {
+				if messageCount > 0 && messageCount%config.LogBatchSize == 0 {
 					// Insert an extra blank line to separate the batches
 					x.SetText(x.Text + "\n\n" + text)
 				} else {
