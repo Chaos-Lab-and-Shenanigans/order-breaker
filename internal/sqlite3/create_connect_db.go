@@ -2,6 +2,7 @@ package sqlite3
 
 import (
 	"database/sql"
+	"fmt"
 	"path/filepath"
 
 	"github.com/Chaos-Lab-and-Shenanigans/astrology/internal/config"
@@ -15,6 +16,7 @@ func CreateAndConnect() (*sql.DB, error) {
 
 	db, err := sql.Open("sqlite3", pathDB)
 	if err != nil {
+		config.Cfg.LogsCh <- fmt.Sprintf("Database path: %v", pathDB)
 		return nil, err
 	}
 
