@@ -60,9 +60,14 @@ If you have the Go toolchain installed, you can build the application yourself:
 
 3.  **Build and Run:**
    
-    Build is for development only. Use `release` script for releasing.   
+    Make sure you have `fyne-cross` installed by running:     
     ```bash
-    ./buildwin
+    go install github.com/fyne-io/fyne-cross@latest
+    ```
+
+    Use fyne-cross to build and run. For example for windows:  
+    ```bash
+    fyne-cross windows
     ```
 
 ## 🛠 Customization: Tailoring the Chaos
